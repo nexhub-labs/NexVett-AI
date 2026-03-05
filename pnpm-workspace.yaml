@@ -1,0 +1,4 @@
+packages:
+  - 'nexvett-ai'
+  - 'nexvett-ai-client'
+  - 'shared-lib'

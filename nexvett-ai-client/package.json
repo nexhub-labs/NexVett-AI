@@ -1,0 +1,43 @@
+{
+  "name": "nexvett-ai-client",
+  "scripts": {
+    "dev": "vike dev",
+    "build": "vike build",
+    "preview": "vike build && vike preview"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@hookform/resolvers": "^5.2.2",
+    "@mantine/core": "^8.3.11",
+    "@mantine/hooks": "^8.3.11",
+    "@nexvett-ai/shared": "workspace:*",
+    "gsap": "^3.14.2",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-hook-form": "^7.71.1",
+    "react-markdown": "^10.1.0",
+    "recharts": "^2.15.0",
+    "rehype-highlight": "^7.0.2",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
+    "vike": "^0.4.250",
+    "vike-react": "^0.6.18",
+    "yup": "^1.7.1"
+  },
+  "author": "Nexhub Labs",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "postcss": "^8.5.6",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "type": "module"
+}

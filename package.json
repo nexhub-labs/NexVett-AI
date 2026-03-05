@@ -1,0 +1,10 @@
+{
+    "name": "nexvett-ai-monorepo",
+    "private": true,
+    "packageManager": "pnpm@10.18.1",
+    "scripts": {
+        "build": "pnpm --filter @nexvett-ai/shared build && pnpm --filter nexvett-ai build && pnpm --filter nexvett-ai-client build",
+        "dev": "pnpm --parallel dev",
+        "postinstall": "pnpm --filter @nexvett-ai/shared build"
+    }
+}

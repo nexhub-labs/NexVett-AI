@@ -1,0 +1,48 @@
+{
+  "name": "nexvett-ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "mastra dev",
+    "build": "echo skipping mastra build",
+    "start": "mastra start"
+  },
+  "keywords": [],
+  "author": "Nexhub Labs",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.18.1",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.9",
+    "@mastra/core": "^0.24.9",
+    "@mastra/evals": "^0.14.4",
+    "@mastra/libsql": "^0.16.4",
+    "@mastra/loggers": "^0.10.19",
+    "@mastra/memory": "^0.15.13",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.94.0",
+    "@nexvett-ai/shared": "workspace:*",
+    "csv-parse": "^6.1.0",
+    "hono": "^4.11.7",
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "5.4.296",
+    "react-markdown": "^10.1.0",
+    "rehype-highlight": "^7.0.2",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
+    "uuid": "^13.0.0",
+    "xlsx": "^0.18.5",
+    "yup": "^1.7.1",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.0",
+    "mastra": "^0.18.9",
+    "typescript": "^5.9.3"
+  }
+}
