@@ -12,7 +12,7 @@ export async function persistAnalysisSummary(
     supabase: SupabaseClient,
     userId: string,
     analysisResult: MultiFileAnalysisResult,
-    metadata: Record<string, any> = {}
+    metadata: Record<string, unknown> = {}
 ) {
     if (!analysisResult.success || !analysisResult.unified) {
         logger.warn('Skipping persistence: Analysis was unsuccessful or missing unified result');
@@ -44,7 +44,8 @@ export async function persistAnalysisSummary(
             .single();
 
         if (error) {
-            logger.error(`Failed to persist analysis summary: ${error.message}`, error);
+            // Downgrade to warn: analysis is returned successfully to the user even without persistence
+            logger.warn(`Failed to persist analysis summary (non-fatal): ${error.message}`);
             return null;
         }
 
@@ -52,7 +53,7 @@ export async function persistAnalysisSummary(
         return data;
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : (typeof err === 'object' && err !== null && 'message' in err) ? String(err.message) : String(err);
-        logger.error(`Unexpected error during summary persistence: ${errorMessage}`, err);
+        logger.warn(`Unexpected error during summary persistence (non-fatal): ${errorMessage}`);
         return null;
     }
 }

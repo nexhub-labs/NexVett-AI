@@ -24,7 +24,8 @@ export async function parseFile(buffer: Buffer, filename: string): Promise<Parse
     return result;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`Parse File Error: ${message}`, { error }); // Log the full error for debugging
+    // Never log full error object — stack may contain parser internals or partial file content
+    logger.error(`ParseFile Error: ${message}`);
     return {
       success: false,
       transactions: [],

@@ -235,16 +235,6 @@ export const apiKeyMiddleware = async (c: Context, next: () => Promise<void>) =>
 
     if (!isKeyValid) {
         const origin = c.req.header('origin') || c.req.header('Origin');
-        const bypassCheck = checkApiKeyBypass(path, method, ip);
-
-        logger.warn('[SECURITY] INVALID_API_KEY violation', {
-            path,
-            method,
-            ip,
-            hasKey: !!apiKey,
-            isBypassed: bypassCheck,
-            expectedPrefix: validKey.substring(0, 4) + '...'
-        });
 
         logSecurityViolation('INVALID_API_KEY', {
             path,

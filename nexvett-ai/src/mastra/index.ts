@@ -76,7 +76,8 @@ export const mastra = new Mastra({
             return sendError(c, message, 400);
           }
 
-          logger.error('GLOBAL_ERROR:', err);
+          // Log only message+name - full error object may include parsed request body with file data
+          logger.error(`GLOBAL_ERROR [${err instanceof Error ? err.name : 'Error'}]: ${message}`);
 
           // If standard Error (or has message), return it, otherwise generic 500
           if (err instanceof Error || (err && typeof err === 'object' && 'message' in err)) {
@@ -253,7 +254,8 @@ export const mastra = new Mastra({
                 });
               } catch (pErr) {
                 // We don't fail the request if persistence fails, but we log it
-                logger.error('PERSISTENCE_FAILED:', pErr);
+                // Never log full pErr object — DB errors can include SQL with user IDs
+                logger.warn(`PERSISTENCE_FAILED (non-fatal): ${pErr instanceof Error ? pErr.message : String(pErr)}`);
               }
             }
 
@@ -262,7 +264,8 @@ export const mastra = new Mastra({
 
             return sendJson(c, result);
           } catch (error) {
-            logger.error('MULTI_ANALYZE_ROUTE_ERROR:', error);
+            // Log only message — full error from file pipeline may contain partial transaction data
+            logger.error(`MULTI_ANALYZE_ROUTE_ERROR: ${error instanceof Error ? error.message : String(error)}`);
             return sendError(c, `Server error: ${error instanceof Error ? error.message : 'Unknown error'}`, 500, { mode: 'unknown' });
           }
         },
@@ -341,7 +344,8 @@ export const mastra = new Mastra({
             // Redirect to the originally intended path after successful auth
             return c.redirect(`${CORS_ORIGIN}${redirectPath}`);
           } catch (err) {
-            logger.error('AUTH_CALLBACK_EXCEPTION:', err);
+            // Log only message — full exception could surface OAuth code/token fragments
+            logger.error(`AUTH_CALLBACK_EXCEPTION: ${err instanceof Error ? err.message : 'unknown error'}`);
             return c.redirect(`${CORS_ORIGIN}/signin?error=internal_callback_error`);
           }
         },
@@ -359,7 +363,10 @@ export const mastra = new Mastra({
           if (user) {
             // Background check: Ensure profile exists
             // (In a real app, this might be handled by a Supabase edge function on signup)
-            getOrCreateDefaultWallet(supabaseServer, user.id).catch(e => logger.error('BG_PROFILE_INIT_ERROR:', e));
+            // Never log full DB error — log only message string to avoid leaking user context
+            getOrCreateDefaultWallet(supabaseServer, user.id).catch(e =>
+              logger.warn(`BG_PROFILE_INIT_ERROR (non-fatal): ${e instanceof Error ? e.message : String(e)}`)
+            );
           }
 
           return sendJson(c, { user: user || null });

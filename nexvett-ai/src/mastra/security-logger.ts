@@ -69,7 +69,8 @@ export function logSecurityDecision(
         context,
     };
 
-    logger.info(`[SECURITY] ${decision}:`, context);
+    // Debug level - fires on every allowlisted request, too noisy for INFO
+    logger.debug(`[SECURITY] ${decision}:`, context);
     persistEvent(event);
 }
 
@@ -168,6 +169,13 @@ export function createRequestFingerprint(
 export function logRequestFingerprint(
     fingerprint: Record<string, unknown>
 ): void {
-    // This is INFO level - used for pattern analysis, not immediate action
-    logger.info('[SECURITY_FINGERPRINT]:', fingerprint);
+    // Fingerprints are written to the audit file for anomaly detection
+    // but suppressed from console (debug level) to avoid log spam.
+    logger.debug('[SECURITY_FINGERPRINT]:', fingerprint);
+    persistEvent({
+        type: 'SECURITY_FINGERPRINT',
+        severity: 'INFO',
+        timestamp: Date.now(),
+        context: fingerprint,
+    });
 }

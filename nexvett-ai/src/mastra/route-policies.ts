@@ -36,6 +36,16 @@ export const ROUTE_POLICIES = {
             methods: ['GET'],
             reason: 'Monitoring/uptime checks - must be accessible without authentication'
         },
+        {
+            path: '/',
+            methods: ['GET'],
+            reason: 'Root path - browser navigation, no API key possible'
+        },
+        {
+            path: '/favicon.ico',
+            methods: ['GET'],
+            reason: 'Browser favicon request - no API key possible'
+        },
     ] as const satisfies readonly RoutePolicy[],
 
     /**

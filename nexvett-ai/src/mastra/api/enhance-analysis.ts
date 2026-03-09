@@ -81,7 +81,8 @@ Be concise, specific to Nigerian banking context, and focus on actionable insigh
       agentInsights,
     };
   } catch (error) {
-    logger.error('Error enhancing analysis with agent:', error);
+    // Never log full error — may contain partial LLM response text with financial summary data
+    logger.error(`Agent enhancement failed: ${error instanceof Error ? error.message : String(error)}`);
     return analysis;
   }
 }

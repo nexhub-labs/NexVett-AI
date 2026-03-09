@@ -33,8 +33,8 @@ export class OpayParser extends BaseBankParser {
       }
       // logger.warn(`Spatial parsing yielded ${result.transactions.length} results, trying other methods...`);
     } catch (spatialError: any) {
-      logger.error(`❌ Spatial parsing failed: ${spatialError.message || spatialError}`);
-      if (spatialError.details) logger.error(`Error details: ${JSON.stringify(spatialError.details)}`);
+      // Log only message - never the full error or .details which may contain raw PDF text/transaction data
+      logger.error(`Spatial parsing failed: ${spatialError?.message || 'unknown error'}`);
     }
 
     // FALLBACK 1: Regex-based parsing (Deterministic & Fast)
