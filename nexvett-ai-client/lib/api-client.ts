@@ -1,6 +1,6 @@
 import { logger } from './logger';
 
-const BACKEND_URL = import.meta.env.VITE_NEXVETT_SERVER_URL || 'http://localhost:4111';
+const BACKEND_URL = import.meta.env.VITE_NEXVETT_SERVER_URL || '';
 
 export interface ApiClientOptions extends RequestInit {
     params?: Record<string, string>;
