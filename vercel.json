@@ -9,18 +9,18 @@
             "src": "nexvett-ai-client/package.json",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "dist/client"
+                "distDir": "nexvett-ai-client/dist/client"
             }
         }
     ],
     "rewrites": [
         {
-            "source": "/api/(.*)",
+            "source": "/api/:path*",
             "destination": "/nexvett-ai/api/index.ts"
         },
         {
-            "source": "/(.*)",
-            "destination": "/nexvett-ai-client/$1"
+            "source": "/:path*",
+            "destination": "/index.html"
         }
     ]
 }
