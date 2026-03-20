@@ -1,26 +1,26 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "nexvett-ai/api/index.ts",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "nexvett-ai-client/package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "nexvett-ai-client/dist/client"
-            }
-        }
-    ],
-    "rewrites": [
-        {
-            "source": "/api/:path*",
-            "destination": "/nexvett-ai/api/index.ts"
-        },
-        {
-            "source": "/:path*",
-            "destination": "/index.html"
-        }
-    ]
+  "version": 2,
+  "builds": [
+    {
+      "src": "nexvett-ai/api/index.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "nexvett-ai-client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/client"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/nexvett-ai/api/index.ts"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
 }
