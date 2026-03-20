@@ -10,5 +10,6 @@ export default {
   description: "Securely analyze your Nigerian bank statements with NexVett AI. Zero storage, in-memory processing, and actionable financial insights.",
 
   extends: [vikeReact],
+  ssr: false,
   passToClient: ["user"],
 } satisfies Config;
