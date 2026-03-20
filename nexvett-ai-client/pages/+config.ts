@@ -11,5 +11,6 @@ export default {
 
   extends: [vikeReact],
   ssr: false,
+  prerender: true,
   passToClient: ["user"],
 } satisfies Config;
