@@ -72,7 +72,7 @@ export class PatternAnalyzer extends BaseProcessorImpl {
         for (const [key, txs] of grouped.entries()) {
             if (txs.length < 2) continue;
 
-            const dates = txs.map(tx => tx.date).sort((a, b) => a.getTime() - b.getTime());
+            const dates = txs.map(tx => new Date(tx.date as string | Date)).sort((a, b) => a.getTime() - b.getTime());
             const frequency = this.detectFrequency(dates);
 
             if (frequency) {
@@ -139,15 +139,16 @@ export class PatternAnalyzer extends BaseProcessorImpl {
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
         for (const tx of transactions) {
-            dayCount[tx.date.getDay()]++;
-            weekOfMonth[Math.ceil(tx.date.getDate() / 7)]++;
+            const d = new Date(tx.date as string | Date);
+            dayCount[d.getDay()]++;
+            weekOfMonth[Math.ceil(d.getDate() / 7)]++;
         }
 
         const busiestDay = Object.entries(dayCount).reduce((a, b) => a[1] > b[1] ? a : b);
         const busiestWeek = Object.entries(weekOfMonth).reduce((a, b) => a[1] > b[1] ? a : b);
 
         const dateRange = transactions.length > 0
-            ? (transactions[transactions.length - 1].date.getTime() - transactions[0].date.getTime()) / (1000 * 60 * 60 * 24)
+            ? (new Date(transactions[transactions.length - 1].date as string | Date).getTime() - new Date(transactions[0].date as string | Date).getTime()) / (1000 * 60 * 60 * 24)
             : 1;
 
         return {
@@ -161,7 +162,8 @@ export class PatternAnalyzer extends BaseProcessorImpl {
         const monthlyData = new Map<string, { income: number; expenses: number }>();
 
         for (const tx of transactions) {
-            const monthKey = `${tx.date.getFullYear()}-${String(tx.date.getMonth() + 1).padStart(2, '0')}`;
+            const d = new Date(tx.date as string | Date);
+            const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
             const data = monthlyData.get(monthKey) || { income: 0, expenses: 0 };
 
             if (tx.type === 'credit') {

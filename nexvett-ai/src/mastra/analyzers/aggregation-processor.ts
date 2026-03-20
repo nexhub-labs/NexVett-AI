@@ -99,7 +99,8 @@ export class AggregationProcessor extends BaseProcessorImpl {
         const totalAmount = expenseTransactions.reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
 
         for (const tx of expenseTransactions) {
-            const category = tx.category || 'uncategorized';
+            const txWithCategory = tx as Transaction & { normalizedCategory?: string; category?: string };
+            const category = txWithCategory.normalizedCategory || txWithCategory.category || 'uncategorized';
             const existing = categoryMap.get(category) || { count: 0, totalAmount: 0 };
             categoryMap.set(category, {
                 count: existing.count + 1,
@@ -121,7 +122,8 @@ export class AggregationProcessor extends BaseProcessorImpl {
         const monthMap = new Map<string, { count: number; income: number; expenses: number }>();
 
         for (const tx of transactions) {
-            const monthKey = `${tx.date.getFullYear()}-${String(tx.date.getMonth() + 1).padStart(2, '0')}`;
+            const d = new Date(tx.date as string | Date);
+            const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
             const existing = monthMap.get(monthKey) || { count: 0, income: 0, expenses: 0 };
 
             monthMap.set(monthKey, {
@@ -147,7 +149,7 @@ export class AggregationProcessor extends BaseProcessorImpl {
             return { start: null, end: null, totalDays: 0 };
         }
 
-        const dates = transactions.map(tx => tx.date).sort((a, b) => a.getTime() - b.getTime());
+        const dates = transactions.map(tx => new Date(tx.date as string | Date)).sort((a, b) => a.getTime() - b.getTime());
         const start = dates[0];
         const end = dates[dates.length - 1];
         const totalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;

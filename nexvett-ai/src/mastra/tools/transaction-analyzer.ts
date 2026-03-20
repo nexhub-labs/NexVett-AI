@@ -101,11 +101,11 @@ export const transactionAnalyzer = createTool({
                 const categorized = result.categorization?.transactions[index];
                 const normalized = result.merchantNormalization?.transactions[index];
                 const fee = result.feeDetection?.fees.find(f =>
-                    f.date.getTime() === tx.date.getTime() && f.amount === tx.amount
+                    new Date(f.date as string | Date).getTime() === new Date(tx.date as string | Date).getTime() && f.amount === tx.amount
                 );
 
                 return {
-                    date: tx.date.toISOString(),
+                    date: new Date(tx.date as string | Date).toISOString(),
                     amount: tx.amount,
                     narration: tx.narration,
                     type: tx.type,

@@ -43,7 +43,7 @@ export const weatherTool = createTool({
 const getWeather = async (location: string) => {
   const geocodingUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1`;
   const geocodingResponse = await fetch(geocodingUrl);
-  const geocodingData = (await geocodingResponse.json()) as GeocodingResponse;
+  const geocodingData = await (geocodingResponse as unknown as { json(): Promise<GeocodingResponse> }).json();
 
   if (!geocodingData.results?.[0]) {
     throw new Error(`Location '${location}' not found`);
@@ -54,7 +54,7 @@ const getWeather = async (location: string) => {
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_gusts_10m,weather_code`;
 
   const response = await fetch(weatherUrl);
-  const data = (await response.json()) as WeatherResponse;
+  const data = await (response as unknown as { json(): Promise<WeatherResponse> }).json();
 
   return {
     temperature: data.current.temperature_2m,
