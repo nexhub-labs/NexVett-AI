@@ -2,11 +2,9 @@ import { Context } from 'hono';
 import { cors } from 'hono/cors';
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 import { createSupabaseServerClient } from '../lib/supabase';
-import { logger } from './lib/logger';
 import { checkApiKeyBypass, checkAuthBypass } from './route-policies';
 import { logSecurityViolation, createRequestFingerprint, logRequestFingerprint, logSecurityDecision } from './security-logger';
 import crypto from 'crypto';
-
 
 const configuredOrigin = process.env.CORS_ORIGIN;
 

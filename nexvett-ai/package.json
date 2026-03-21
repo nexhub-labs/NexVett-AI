@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
-    "build": "tsup",
+    "build": "echo skipping mastra build",
     "start": "mastra start"
   },
   "keywords": [],

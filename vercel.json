@@ -9,14 +9,18 @@
             }
         },
         {
-            "src": "nexvett-ai/dist/index.js",
-            "use": "@vercel/node"
+            "src": "nexvett-ai/api/index.ts",
+            "use": "@vercel/node",
+            "config": {
+                "bundle": true,
+                "maxDuration": 30
+            }
         }
     ],
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "/nexvett-ai/dist/index.js"
+            "dest": "/nexvett-ai/api/index.ts"
         },
         {
             "handle": "filesystem"
