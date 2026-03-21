@@ -1,7 +1,7 @@
 import { handle } from '@hono/node-server/vercel';
 import { Hono } from 'hono';
-import { mastra } from '../src/mastra';
-import { globalSecurity, sendError } from '../src/mastra/security';
+import { mastra } from '../src/mastra/index.js';
+import { globalSecurity, sendError } from '../src/mastra/security.js';
 
 const app = new Hono();
 
