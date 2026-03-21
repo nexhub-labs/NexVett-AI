@@ -1,12 +1,12 @@
+// nexvett-ai/api/index.ts
 import { handle } from '@hono/node-server/vercel';
 import { Hono } from 'hono';
-import { mastra } from '../src/mastra/index.js';
-import { globalSecurity, sendError } from '../src/mastra/security.js';
+import { mastra } from '../src/mastra/index';
+import { globalSecurity, sendError } from '../src/mastra/security';
 
 const app = new Hono();
 
-// 1. World-Class Security: Global Pipeline (CORS, API Key, CSRF, Secure Headers)
-// This applies our peak security standards to every Vercel deployment.
+// 1. Global Security Pipeline (CORS, API Key, CSRF, Secure Headers)
 app.use('*', ...globalSecurity);
 
 // 2. Global Error Handling
@@ -15,16 +15,23 @@ app.onError((err, c) => {
     return sendError(c, err.message || 'Internal Server Error', 500);
 });
 
-// 3. Health Check (Unified with mastra/index.ts)
-app.get('/api/health-check', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
+// 3. Health Check
+app.get('/api/health-check', (c) =>
+    c.json({ status: 'ok', timestamp: new Date().toISOString() })
+);
 
-// 6. Dynamic Route Registration with Middleware Support
+// 4. Dynamic Route Registration from Mastra
 const mastraServer = mastra.getServer();
 if (mastraServer?.apiRoutes) {
     mastraServer.apiRoutes.forEach((route) => {
-        const method = (route.method.toLowerCase() || 'post') as 'get' | 'post' | 'put' | 'delete' | 'patch';
+        const method = (route.method.toLowerCase() || 'post') as
+            | 'get' | 'post' | 'put' | 'delete' | 'patch';
         const path = route.path.startsWith('/') ? route.path : `/${route.path}`;
-        const middlewares = Array.isArray(route.middleware) ? route.middleware : (route.middleware ? [route.middleware] : []);
+        const middlewares = Array.isArray(route.middleware)
+            ? route.middleware
+            : route.middleware
+                ? [route.middleware]
+                : [];
 
         if ('handler' in route) {
             (app[method] as any)(path, ...middlewares, route.handler);
@@ -37,7 +44,7 @@ if (mastraServer?.apiRoutes) {
     });
 }
 
-// 7. Agent List Helper
+// 5. Agent List Helper
 app.get('/api/agents', (c) => {
     const agents = mastra.getAgents();
     const agentList = Object.entries(agents).map(([name, agent]) => ({

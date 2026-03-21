@@ -1,3 +1,4 @@
+// nexvett-ai/src/mastra/index.ts
 import { Mastra } from '@mastra/core/mastra';
 import * as yup from 'yup';
 import { type ApiRoute } from '@mastra/core/server';
@@ -9,7 +10,6 @@ import { analyzeAccounts } from './api/analyze-accounts';
 import { enhanceAnalysisWithAgent } from './api/enhance-analysis';
 import { analyzeMultiFile } from './api/analyze-multi-file';
 import { Context } from 'hono';
-import { secureHeaders } from 'hono/secure-headers';
 import {
   globalSecurity,
   protectedSecurity,
@@ -39,7 +39,6 @@ import {
 import { CoreMessage } from '@mastra/core';
 import { createSupabaseServerClient, supabase } from '../lib/supabase';
 import { logger } from './lib/logger';
-import { ContentfulStatusCode } from 'hono/utils/http-status';
 import { persistAnalysisSummary, getOrCreateDefaultWallet } from './lib/db';
 
 

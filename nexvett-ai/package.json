@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
-    "build": "echo skipping mastra build",
+    "build": "tsup",
     "start": "mastra start"
   },
   "keywords": [],
@@ -24,9 +24,9 @@
     "@mastra/libsql": "^0.16.4",
     "@mastra/loggers": "^0.10.19",
     "@mastra/memory": "^0.15.13",
+    "@nexvett-ai/shared": "workspace:*",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.94.0",
-    "@nexvett-ai/shared": "workspace:*",
     "csv-parse": "^6.1.0",
     "hono": "^4.11.7",
     "pdf-parse": "^2.4.5",
@@ -43,6 +43,7 @@
   "devDependencies": {
     "@types/node": "^25.2.0",
     "mastra": "^0.18.9",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   }
 }
