@@ -23,12 +23,15 @@ export function clusterPositions(positions: number[], tolerance: number): number
 
 /**
  * Detects column boundaries by clustering X positions.
+ * Excludes items in the top 10% and bottom 5% of each page to skip headers/footers.
  */
 export function detectTableColumns(items: TextItem[]): number[] {
-    // Filter for items likely to be in the transaction table
-    // (Ignoring extreme top/bottom areas)
     const xPositions = items
-        .filter(item => item.y > 100 && item.y < 800)
+        .filter(item => {
+            const topMargin = item.pageHeight * 0.90;    // exclude top 10% (headers)
+            const bottomMargin = item.pageHeight * 0.05; // exclude bottom 5% (footers)
+            return item.y > bottomMargin && item.y < topMargin;
+        })
         .map(item => item.x);
 
     return clusterPositions(xPositions, 10).sort((a, b) => a - b);
@@ -41,8 +44,7 @@ export function detectTableColumns(items: TextItem[]): number[] {
 export function groupIntoRows(items: TextItem[], rowHeightThreshold: number = 20): TextItem[][] {
     if (items.length === 0) return [];
 
-    // Sort by Y position (top to bottom). 
-    // PDF coordinate system usually has higher Y at the top, so we sort descending.
+    // Sort by Y position descending — higher Y = top of page in PDF coordinates.
     const sorted = [...items].sort((a, b) => b.y - a.y);
 
     const rows: TextItem[][] = [];
@@ -50,21 +52,16 @@ export function groupIntoRows(items: TextItem[], rowHeightThreshold: number = 20
     let lastY = sorted[0].y;
 
     for (const item of sorted) {
-        // If the vertical distance from the last item is within the threshold, it's the same row
         if (Math.abs(item.y - lastY) <= rowHeightThreshold) {
             currentRow.push(item);
         } else {
-            if (currentRow.length > 0) {
-                rows.push(currentRow);
-            }
+            if (currentRow.length > 0) rows.push(currentRow);
             currentRow = [item];
         }
-        lastY = item.y; // Update for every item to track the sliding vertical window
+        lastY = item.y;
     }
 
-    if (currentRow.length > 0) {
-        rows.push(currentRow);
-    }
+    if (currentRow.length > 0) rows.push(currentRow);
 
     return rows;
 }
@@ -76,15 +73,12 @@ export function assignItemsToColumns(row: TextItem[], columns: number[]): TextIt
     const cells: TextItem[][] = Array(columns.length).fill(null).map(() => []);
 
     for (const item of row) {
-        // Find the column index where this item belongs
         const colIndex = columns.findIndex((colX, i) => {
-            const nextColX = columns[i + 1] || Infinity;
+            const nextColX = columns[i + 1] ?? Infinity;
             return item.x >= colX - 5 && item.x < nextColX - 5;
         });
 
-        if (colIndex >= 0) {
-            cells[colIndex].push(item);
-        }
+        if (colIndex >= 0) cells[colIndex].push(item);
     }
 
     return cells;

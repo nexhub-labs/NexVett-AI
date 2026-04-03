@@ -3,7 +3,7 @@ import { cors } from 'hono/cors';
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 import { createSupabaseServerClient } from '../lib/supabase';
 import { checkApiKeyBypass, checkAuthBypass } from './route-policies';
-import { logSecurityViolation, createRequestFingerprint, logRequestFingerprint, logSecurityDecision } from './security-logger';
+import { logSecurityViolation, createRequestFingerprint, logRequestFingerprint } from './security-logger';
 import crypto from 'crypto';
 
 const configuredOrigin = process.env.CORS_ORIGIN;
@@ -140,23 +140,34 @@ export const csrfProtection = async (c: Context, next: () => Promise<void>) => {
 
 /**
  * World-Class Security: Rate Limiting
+ * Bounded in-memory store with eviction of expired entries.
+ * Cap at 10,000 IPs to prevent unbounded growth under IP-spoofing attacks.
  */
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000;
 const MAX_REQUESTS = 20;
+const RATE_LIMIT_MAP_CAP = 10_000;
+
+function evictExpiredRateLimitEntries(now: number): void {
+    if (rateLimitMap.size < RATE_LIMIT_MAP_CAP) return;
+    for (const [ip, record] of rateLimitMap) {
+        if (now > record.resetAt) rateLimitMap.delete(ip);
+        if (rateLimitMap.size < RATE_LIMIT_MAP_CAP * 0.75) break;
+    }
+}
 
 export const rateLimiter = async (c: Context, next: () => Promise<void>) => {
     const ip = c.req.header('x-forwarded-for') || '127.0.0.1';
     const now = Date.now();
-    const record = rateLimitMap.get(ip) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW };
 
-    if (now > record.resetAt) {
-        record.count = 1;
-        record.resetAt = now + RATE_LIMIT_WINDOW;
-    } else {
-        record.count++;
-    }
+    evictExpiredRateLimitEntries(now);
 
+    const existing = rateLimitMap.get(ip);
+    const record = existing && now <= existing.resetAt
+        ? existing
+        : { count: 0, resetAt: now + RATE_LIMIT_WINDOW };
+
+    record.count++;
     rateLimitMap.set(ip, record);
 
     if (record.count > MAX_REQUESTS) {
@@ -218,18 +229,13 @@ export const apiKeyMiddleware = async (c: Context, next: () => Promise<void>) =>
         return sendError(c, 'API security misconfigured', 500);
     }
 
-    // Protection against timing attacks: Use constant-time comparison
-    const keyBuffer = Buffer.from(apiKey || '');
-    const validBuffer = Buffer.from(validKey);
-
-    let isKeyValid = false;
-    try {
-        if (apiKey && apiKey.length === validKey.length) {
-            isKeyValid = crypto.timingSafeEqual(keyBuffer, validBuffer);
-        }
-    } catch (e) {
-        isKeyValid = false;
-    }
+    // Constant-time comparison via HMAC digests.
+    // Both digests are always 32 bytes regardless of input length,
+    // so there is no key-length information leak from an early return.
+    const ephemeralKey = crypto.randomBytes(32);
+    const hmacSupplied = crypto.createHmac('sha256', ephemeralKey).update(apiKey ?? '').digest();
+    const hmacExpected = crypto.createHmac('sha256', ephemeralKey).update(validKey).digest();
+    const isKeyValid = crypto.timingSafeEqual(hmacSupplied, hmacExpected);
 
     if (!isKeyValid) {
         const origin = c.req.header('origin') || c.req.header('Origin');

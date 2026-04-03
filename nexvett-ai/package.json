@@ -29,7 +29,6 @@
     "@supabase/supabase-js": "^2.94.0",
     "csv-parse": "^6.1.0",
     "hono": "^4.11.7",
-    "pdf-parse": "^2.4.5",
     "pdfjs-dist": "5.4.296",
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
